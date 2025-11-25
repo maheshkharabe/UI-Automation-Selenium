@@ -17,7 +17,7 @@
             <class name="Tests.TestHerokuPage">
                 <methods>
                     <include name="SplitTest"/>
-                    <<include name="AddRemoveElement"/>
+                    <include name="AddRemoveElement"/>
                     <include name="BasicAuth"/>
                     <include name="CheckBoxOperations"/>
                     <include name="ContextMenu"/>
