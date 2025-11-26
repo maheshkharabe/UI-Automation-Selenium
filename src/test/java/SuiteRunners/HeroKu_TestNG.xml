@@ -25,6 +25,8 @@
                     <include name="DragAndDrop"/>
                     <include name="DropDownListOperations"/>
                     <include name="BrokenImages"/>
+                    <include name="challengingDOM_Part1"/>
+                    <include name="challengingDOM_Part2"/>
                 </methods>
             </class>
         </classes>

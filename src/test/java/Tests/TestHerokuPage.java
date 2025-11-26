@@ -13,7 +13,9 @@ import com.aventstack.extentreports.markuputils.MarkupHelper;
 import com.aventstack.extentreports.reporter.ExtentSparkReporter;
 import org.openqa.selenium.*;
 import org.openqa.selenium.interactions.Actions;
+import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.Select;
+import org.openqa.selenium.support.ui.WebDriverWait;
 import org.testng.ITestContext;
 import org.testng.annotations.*;
 import org.testng.asserts.SoftAssert;
@@ -158,8 +160,6 @@ public class TestHerokuPage {
         WebElement element = driver.findElement(By.cssSelector(".example > p"));
         softAssert.assertEquals(element.getText(),expMessage,"Incorrect confirmation message");
         extentTest.pass("Basic Auth done ", takePageScreenShotBase64(driver));
-
-
 
         softAssert.assertAll();
 
@@ -402,7 +402,108 @@ public class TestHerokuPage {
 
     }//end DropDownListOperations
 
-    @AfterMethod
+    @Test(dataProvider = "ChallengingDOMData",dataProviderClass = HeroKuDataProvider.class)
+    public void challengingDOM_Part1(String inputValue, String actionToPerform) throws InterruptedException {
+        extentTest = extReport.createTest(Thread.currentThread().getStackTrace()[1].getMethodName());
+        extentTest.log(Status.INFO,MarkupHelper.createLabel("For this test, read input value and action('Edit' or 'Delete') to perform when match found",ExtentColor.GREY));
+        boolean foundValue =  false;
+        extentTest.log(Status.INFO, MarkupHelper.createLabel("Finding text: '"+inputValue + "' to perform '"+ actionToPerform + "' action on same ",ExtentColor.GREY));
+
+        SoftAssert softAssert = new SoftAssert();
+        driver = objHKCommomFun.launchHeroKu(extentTest);
+
+        driver.findElement(By.linkText("Challenging DOM")).click();
+        Thread.sleep(sleepTime);
+
+        extentTest.log(Status.INFO, "Challenging DOM Page opened ", takePageScreenShotBase64(driver));
+
+        /*****************************************************************************************************
+         * For this test, just take input from user to understand which value he would like to edit or delete
+         * Find row basis input and click edit/delete as requested
+         *****************************************************************************************************/
+        WebElement table = driver.findElement(By.xpath("//div[@class='large-10 columns']/table"));//fetch all rows from table
+        extentTest.log(Status.INFO, "Working on table", takeElementScreenShotBase64(table));
+
+        List<WebElement> allRows = driver.findElements(By.xpath("//div[@class='large-10 columns']/table/tbody/tr"));//fetch all rows from table
+
+        for (WebElement row: allRows ) {//iterate through each row
+           //Iterate through each cell of selected row
+            List<WebElement> allCells = row.findElements(By.xpath("td"));
+
+            for (WebElement cell: allCells) {
+                if(cell.getText().equals(inputValue)) {//when value matched, click on edit
+                    extentTest.log(Status.INFO, "Match found in row", takeElementScreenShotBase64(row));//log row details with screen print
+                    WebElement actionEle = row.findElement(By.linkText(actionToPerform));
+                    actionEle.click(); //use  selected row to find edit/delete element on same
+                    foundValue =  true;
+                    extentTest.log(Status.PASS, "Click actioned on", takeElementScreenShotBase64(cell,"Clicked"));
+                    extentTest.log(Status.PASS, "Action", takeElementScreenShotBase64(actionEle,"action"));
+                }
+            }
+
+        }//end outer foreach allRows
+
+        if(!foundValue){
+            extentTest.log(Status.WARNING, MarkupHelper.createLabel("Text NOT found: '" +inputValue + "'",ExtentColor.RED));
+        }
+
+    }// end challengingDOM_Part1
+
+    @Test
+    public void challengingDOM_Part2() throws InterruptedException {
+        extentTest = extReport.createTest(Thread.currentThread().getStackTrace()[1].getMethodName());
+
+        driver = objHKCommomFun.launchHeroKu(extentTest);
+
+        driver.findElement(By.linkText("Challenging DOM")).click();
+        Thread.sleep(sleepTime);
+
+        extentTest.log(Status.INFO, "Challenging DOM Page opened ", takePageScreenShotBase64(driver));
+
+        /*****************************************************************************************************
+         * On this test, we identifying three buttons (dynamic text and ID on each run)
+         * Clicking them will refresh the page
+         * wait for page load till canvas is visible, scroll down and takeScreenShot of canvas
+         *****************************************************************************************************/
+        WebDriverWait wait = new WebDriverWait(driver, 20);//handle stale element 'canvas'.
+        WebElement canvas = null;
+        JavascriptExecutor js = (JavascriptExecutor) driver;
+
+        WebElement button1 = driver.findElement(By.xpath("//a[contains(@id,'2e41f8087142') and @class='button']"));
+        extentTest.log(Status.INFO,"Clicking on 1st button",takeElementScreenShotBase64(button1));
+        button1.click();//this will refresh page
+        canvas = wait.until(ExpectedConditions.presenceOfElementLocated(By.id("canvas")));//wait till canvas is loaded else will get stale element exception
+        extentTest.log(Status.INFO,"After 1st button click, UI refreshed",takePageScreenShotBase64(driver));
+        js.executeScript("arguments[0].scrollIntoView(true);", canvas);//scroll down to take screenShot of canvas else image will not be fully captured
+        extentTest.log(Status.INFO,"After 1st click, canvas output",takeElementScreenShotBase64(canvas));
+        js.executeScript("window.scrollTo(0, 0);");//scroll up before next button click to capture full image
+
+
+        WebElement button2 = driver.findElement(By.xpath("//a[contains(@id,'2e41f8087142') and @class='button alert']"));
+        extentTest.log(Status.INFO,"Clicking on 2nd button",takeElementScreenShotBase64(button2));
+        button2.click();
+        canvas = wait.until(ExpectedConditions.presenceOfElementLocated(By.id("canvas")));
+        extentTest.log(Status.INFO,"After 2nd button click, UI refreshed",takePageScreenShotBase64(driver));
+        js.executeScript("arguments[0].scrollIntoView(true);", canvas);
+        extentTest.log(Status.INFO,"After 2nd click, canvas output",takeElementScreenShotBase64(canvas));
+        js.executeScript("window.scrollTo(0, 0);");
+
+
+        WebElement button3 = driver.findElement(By.xpath("//a[contains(@id,'2e41f8087142') and @class='button success']"));
+        extentTest.log(Status.INFO,"Clicking on 3rd button",takeElementScreenShotBase64(button3));
+        button3.click();
+        canvas = wait.until(ExpectedConditions.presenceOfElementLocated(By.id("canvas")));
+        extentTest.log(Status.INFO,"After 3rd button click, UI refreshed",takePageScreenShotBase64(driver));
+        js.executeScript("arguments[0].scrollIntoView(true);", canvas);
+        extentTest.log(Status.INFO,"After 3rd click, canvas output",takeElementScreenShotBase64(canvas));
+        js.executeScript("window.scrollTo(0, 0);");
+
+        extentTest.pass("Challengin DOM part2-Dynamic element completed");
+
+    }// end challengingDOM_Part2
+
+
+        @AfterMethod
     public void closeCurrentBrowserWindow(){
         driver.close();
     }
