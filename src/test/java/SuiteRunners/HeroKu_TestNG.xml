@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE suite SYSTEM "https://testng.org/testng-1.0.dtd" >
+<suite name="Selenium_HeroKu_Operations" parallel = "methods" thread-count="2">
+    <parameter name="environmentToUse" value="SIT"/>
+    <parameter name="browserToUse" value="Chrome"/>
+    <test name="Set_Up_Test_Environment">
+        <classes>
+            <class name="Configs.TestConfigsHerokuApp">
+                <methods>
+                    <include name="setConfigsForHeroku"/>
+                </methods>
+            </class>
+        </classes>
+    </test>
+    <test name="Exlpore_UI_Automation_HeroKuPage">
+        <classes>
+            <class name="Tests.TestHerokuPage">
+                <methods>
+                    <include name="SplitTest"/>
+                    <include name="AddRemoveElement"/>
+                    <include name="BasicAuth"/>
+                    <include name="BrokenImages"/>
+                    <include name="CheckBoxOperations"/>
+                    <include name="ContextMenu"/>
+                    <include name="DisappearingElement"/>
+                    <include name="DragAndDrop"/>
+                    <include name="DropDownListOperations"/>
+                    <include name="challengingDOM_Part1"/>
+                    <include name="challengingDOM_Part2"/>
+                </methods>
+            </class>
+        </classes>
+    </test>
+</suite>
