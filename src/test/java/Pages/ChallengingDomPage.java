@@ -15,8 +15,10 @@ public class ChallengingDomPage {
         PageFactory.initElements(driver,this);//Create web elements for current page
     }
 
-    @FindBy(xpath = "//div[@class='large-10 columns']/table")
-    public WebElement table;
+//    @FindBy(xpath = "//div[@class='large-10 columns']/table")
+//    public WebElement table;
+
+    public By table =By.xpath("//div[@class='large-10 columns']/table");
 
     public By tableRows = By.xpath("//div[@class='large-10 columns']/table/tbody/tr");
 

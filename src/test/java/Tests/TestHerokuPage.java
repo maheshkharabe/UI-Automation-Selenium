@@ -38,14 +38,13 @@ public class TestHerokuPage {
     HeroKuCommonFunctions objHKCommomFun = new HeroKuCommonFunctions();
     ExtentReports extReport;
     ExtentSparkReporter sprkReporter;
-    ExtentTest extentTest;
     SoftAssert softAssert = new SoftAssert();
     String pathToExtentReportFile="";
     HeroKuHomePage objHkHomePage;
     AbTestPage objAbtestPage;
     AddRemoveElementPage objAddRemoveElementPage;
     BasicAuthPage objBasicAuthPage;
-    BrokenImagesPage objBorkenImagePage;
+    BrokenImagesPage objBrokenImagePage;
     CheckBoxOpsPage objCheckBoxOpsPage;
     ContextMenuPage objContextMenuPage;
     DisAppearingElementPage objDisAppearingElementPage;
@@ -70,15 +69,15 @@ public class TestHerokuPage {
 
     @BeforeTest()
     public void createTestForReport(ITestContext testContext){
-        extentTest = extReport.createTest(testContext.getName())
+        ExtentTest extentTest = extReport.createTest(testContext.getName())
                 .info(MarkupHelper.createLabel("Explore the UI: The Internet - HeroKu", ExtentColor.INDIGO))
                 .assignAuthor("MaheshK").assignDevice(Long.toString(Thread.currentThread().getId()));
     }
 
     @BeforeMethod
     public void launchHomePage(){
-        WebDriver w = objHKCommomFun.launchHeroKu(extentTest);
-        //w.manage().timeouts().implicitlyWait(30, TimeUnit.SECONDS);
+        WebDriver w = objHKCommomFun.launchHeroKu();
+        w.manage().timeouts().implicitlyWait(20, TimeUnit.SECONDS);
         driver.set(w);
         objHkHomePage = new HeroKuHomePage(driver.get());//initialize home page object
         softAssert = new SoftAssert();
@@ -92,9 +91,9 @@ public class TestHerokuPage {
                 "         A random sample of users is divided into two groups, with each group exposed to one version.\n" +
                 "         Performance is measured using specific metrics, such as conversion rates, click-through rates, or user engagement." +
                 "         In this case: Page loads with different contents randomly e.g.'A/B Test Variation 1' or 'A/B Test Control'";
-        objAbtestPage = new AbTestPage(driver.get());//initialize home page object
-        extentTest = extReport.createTest(Thread.currentThread().getStackTrace()[1].getMethodName()).assignCategory("SANITY").assignDevice(Long.toString(Thread.currentThread().getId()));
+        ExtentTest extentTest = extReport.createTest(Thread.currentThread().getStackTrace()[1].getMethodName()).assignCategory("SANITY").assignDevice(Long.toString(Thread.currentThread().getId()));
         extentTest.log(Status.INFO,"Home page", takePageScreenShotBase64(driver.get()));
+        objAbtestPage = new AbTestPage(driver.get());//initialize home page object
 
         objHkHomePage.clickOnAbTestingLink();
         Thread.sleep(sleepTime);
@@ -112,7 +111,7 @@ public class TestHerokuPage {
 
     @Test(groups = {"Sanity"})
     public void AddRemoveElement() throws InterruptedException {
-        extentTest = extReport.createTest(Thread.currentThread().getStackTrace()[1].getMethodName()).assignCategory("SANITY").assignDevice(Long.toString(Thread.currentThread().getId()));
+        ExtentTest extentTest = extReport.createTest(Thread.currentThread().getStackTrace()[1].getMethodName()).assignCategory("SANITY").assignDevice(Long.toString(Thread.currentThread().getId()));
         extentTest.log(Status.INFO,"Home page", takePageScreenShotBase64(driver.get()));
         objAddRemoveElementPage = new AddRemoveElementPage(driver.get());
 
@@ -151,9 +150,9 @@ public class TestHerokuPage {
     public void BasicAuth(String userName, String password, String expMessage) throws InterruptedException {
 
         // Create new web driver instance to else test will fail due to session issues.
-        WebDriver driver1 = objHKCommomFun.launchHeroKu("incognito",extentTest);//set Incognito mode for fresh start each time
+        WebDriver driver1 = objHKCommomFun.launchHeroKu("incognito");//set Incognito mode for fresh start each time
         objHkHomePage = new HeroKuHomePage(driver1);
-        extentTest = extReport.createTest(Thread.currentThread().getStackTrace()[1].getMethodName()).assignDevice(Long.toString(Thread.currentThread().getId()));
+        ExtentTest extentTest = extReport.createTest(Thread.currentThread().getStackTrace()[1].getMethodName()).assignDevice(Long.toString(Thread.currentThread().getId()));
         extentTest.log(Status.INFO,"Home page", takePageScreenShotBase64(driver.get()));
         objBasicAuthPage =  new BasicAuthPage(driver1);
 
@@ -174,9 +173,9 @@ public class TestHerokuPage {
 
     @Test()
     public void BrokenImages() throws InterruptedException {
-        extentTest = extReport.createTest(Thread.currentThread().getStackTrace()[1].getMethodName()).assignDevice(Long.toString(Thread.currentThread().getId()));
+        ExtentTest extentTest = extReport.createTest(Thread.currentThread().getStackTrace()[1].getMethodName()).assignDevice(Long.toString(Thread.currentThread().getId()));
         extentTest.log(Status.INFO,"Home page", takePageScreenShotBase64(driver.get()));
-        objBorkenImagePage = new BrokenImagesPage(driver.get());
+        objBrokenImagePage = new BrokenImagesPage(driver.get());
 
         objHkHomePage.clickOnBrokenImagesLink();
         Thread.sleep(sleepTime);
@@ -187,7 +186,7 @@ public class TestHerokuPage {
          When we hit URL, if we get 200 then good image else its not available(i.e. broken)
          ******************************************************************************/
 
-        List<WebElement> allImageTags = driver.get().findElements(objBorkenImagePage.image);
+        List<WebElement> allImageTags = driver.get().findElements(objBrokenImagePage.image);
         System.out.println("Number of images:"+allImageTags.size());
 
         for (WebElement image:allImageTags) {
@@ -225,7 +224,7 @@ public class TestHerokuPage {
 
     @Test
     public void CheckBoxOperations() throws InterruptedException {
-        extentTest = extReport.createTest(Thread.currentThread().getStackTrace()[1].getMethodName()).assignDevice(Long.toString(Thread.currentThread().getId()));
+        ExtentTest extentTest = extReport.createTest(Thread.currentThread().getStackTrace()[1].getMethodName()).assignDevice(Long.toString(Thread.currentThread().getId()));
         extentTest.log(Status.INFO,"Home page", takePageScreenShotBase64(driver.get()));
 
         objHkHomePage.clickOnCheckBoxesLink();
@@ -262,7 +261,7 @@ public class TestHerokuPage {
          typically a right-click or a long press.Displays actions that are contextually relevant,
          such as copy, paste, delete, or specific functions related to the selected item
          **************************************************************************************************/
-        extentTest = extReport.createTest(Thread.currentThread().getStackTrace()[1].getMethodName()).assignDevice(Long.toString(Thread.currentThread().getId()));
+        ExtentTest extentTest = extReport.createTest(Thread.currentThread().getStackTrace()[1].getMethodName()).assignDevice(Long.toString(Thread.currentThread().getId()));
         extentTest.log(Status.INFO,"Home page", takePageScreenShotBase64(driver.get()));
         objContextMenuPage = new ContextMenuPage(driver.get());
         Actions action = new Actions(driver.get());
@@ -289,7 +288,7 @@ public class TestHerokuPage {
          In current website- 'Gallery' option on Disappearing Elements page may not always present
          Apply logic on such elements-Perform actions only if element is present.
          **************************************************************************************************/
-        extentTest = extReport.createTest(Thread.currentThread().getStackTrace()[1].getMethodName()).assignDevice(Long.toString(Thread.currentThread().getId()));
+        ExtentTest extentTest = extReport.createTest(Thread.currentThread().getStackTrace()[1].getMethodName()).assignDevice(Long.toString(Thread.currentThread().getId()));
         extentTest.log(Status.INFO,"Home page", takePageScreenShotBase64(driver.get()));
         objHkHomePage.clickOnDisappearingElementsLink();
         Thread.sleep(sleepTime);
@@ -324,7 +323,7 @@ public class TestHerokuPage {
     @Test
     public void DragAndDrop() throws InterruptedException {
 
-        extentTest = extReport.createTest(Thread.currentThread().getStackTrace()[1].getMethodName()).assignDevice(Long.toString(Thread.currentThread().getId()));
+        ExtentTest extentTest = extReport.createTest(Thread.currentThread().getStackTrace()[1].getMethodName()).assignDevice(Long.toString(Thread.currentThread().getId()));
         extentTest.log(Status.INFO,"Home page", takePageScreenShotBase64(driver.get()));
         Actions action = new Actions(driver.get());
         objHkHomePage.clickOnDragDropLink();
@@ -360,7 +359,7 @@ public class TestHerokuPage {
     @Test
     public void DropDownListOperations() throws InterruptedException {
 
-        extentTest = extReport.createTest(Thread.currentThread().getStackTrace()[1].getMethodName()).assignDevice(Long.toString(Thread.currentThread().getId()));
+        ExtentTest extentTest = extReport.createTest(Thread.currentThread().getStackTrace()[1].getMethodName()).assignDevice(Long.toString(Thread.currentThread().getId()));
         extentTest.log(Status.INFO,"Home page", takePageScreenShotBase64(driver.get()));
         objHkHomePage.clickOnDropdownLink();
         Thread.sleep(sleepTime);
@@ -383,7 +382,7 @@ public class TestHerokuPage {
 
     @Test(dataProvider = "ChallengingDOMData",dataProviderClass = HeroKuDataProvider.class)
     public void challengingDOM_Part1(String inputValue, String actionToPerform) throws InterruptedException {
-        extentTest = extReport.createTest(Thread.currentThread().getStackTrace()[1].getMethodName()).assignDevice(Long.toString(Thread.currentThread().getId()));
+        ExtentTest extentTest = extReport.createTest(Thread.currentThread().getStackTrace()[1].getMethodName()).assignDevice(Long.toString(Thread.currentThread().getId()));
         extentTest.log(Status.INFO,"Home page", takePageScreenShotBase64(driver.get()));
         extentTest.log(Status.INFO,MarkupHelper.createLabel("For this test, read input value and action('Edit' or 'Delete') to perform when match found",ExtentColor.GREY));
         boolean foundValue =  false;
@@ -391,7 +390,7 @@ public class TestHerokuPage {
 
         objHkHomePage.clickOnChallengingDomLink();
         Thread.sleep(sleepTime);
-
+        HeroKuCommonFunctions.waitForPageLoad(driver.get(),40);
         extentTest.log(Status.INFO, "Challenging DOM Page opened ", takePageScreenShotBase64(driver.get()));
 
         /*****************************************************************************************************
@@ -399,7 +398,7 @@ public class TestHerokuPage {
          * Find row basis input and click edit/delete as requested
          *****************************************************************************************************/
         objChallengingDomPage = new ChallengingDomPage(driver.get());
-        WebElement table = objChallengingDomPage.table;//fetch all rows from table
+        WebElement table = driver.get().findElement(objChallengingDomPage.table);//fetch all rows from table
         extentTest.log(Status.INFO, "Working on table", takeElementScreenShotBase64(table));
 
         List<WebElement> allRows = driver.get().findElements(objChallengingDomPage.tableRows);//fetch all rows from table
@@ -422,22 +421,22 @@ public class TestHerokuPage {
         }//end outer foreach allRows
 
         if(!foundValue){
-            extentTest.log(Status.WARNING, MarkupHelper.createLabel("Text NOT found: '" +inputValue + "'",ExtentColor.RED));
+            extentTest.log(Status.FAIL, MarkupHelper.createLabel("Text NOT found: '" +inputValue + "'",ExtentColor.RED));
         }
 
     }// end challengingDOM_Part1
 
     @Test
     public void challengingDOM_Part2() throws InterruptedException {
-        extentTest = extReport.createTest(Thread.currentThread().getStackTrace()[1].getMethodName()).assignDevice(Long.toString(Thread.currentThread().getId()));
+        ExtentTest extentTest = extReport.createTest(Thread.currentThread().getStackTrace()[1].getMethodName()).assignDevice(Long.toString(Thread.currentThread().getId()));
         extentTest.log(Status.INFO,"Home page", takePageScreenShotBase64(driver.get()));
         objHkHomePage.clickOnChallengingDomLink();
         Thread.sleep(sleepTime);
 
         extentTest.log(Status.INFO, "Challenging DOM Page opened ", takePageScreenShotBase64(driver.get()));
-
+        HeroKuCommonFunctions.waitForPageLoad(driver.get(),40);
         /*****************************************************************************************************
-         * On this test, we identifying three buttons (dynamic text and ID on each run)
+         * On this test, we're identifying three buttons (dynamic text and ID on each run)
          * Clicking them will refresh the page
          * wait for page load till canvas is visible, scroll down and takeScreenShot of canvas
          *****************************************************************************************************/
@@ -479,7 +478,7 @@ public class TestHerokuPage {
     @Ignore
     @Test
     public void dynamicContents() throws InterruptedException {
-        extentTest = extReport.createTest(Thread.currentThread().getStackTrace()[1].getMethodName()).assignDevice(Long.toString(Thread.currentThread().getId()));
+        ExtentTest extentTest = extReport.createTest(Thread.currentThread().getStackTrace()[1].getMethodName()).assignDevice(Long.toString(Thread.currentThread().getId()));
         extentTest.log(Status.INFO,"Home page", takePageScreenShotBase64(driver.get()));
         objHkHomePage.clickOnDynamicContentLink();
         Thread.sleep(sleepTime);

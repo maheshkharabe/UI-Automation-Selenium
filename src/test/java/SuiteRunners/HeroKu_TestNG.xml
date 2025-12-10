@@ -12,7 +12,7 @@
             </class>
         </classes>
     </test>
-    <test name="Exlpore_UI_Automation_HeroKuPage">
+    <test name="Explore_UI_Automation_HeroKuPage">
         <classes>
             <class name="Tests.TestHerokuPage">
                 <methods>
